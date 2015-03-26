@@ -58,7 +58,7 @@ namespace huinspector.Controllers
                         else
                         {
                             //Default to the dashboard
-                            return RedirectToAction("Index", "Exams");
+                            return RedirectToAction("Index", "Home");
                         }
                     }
                     else if (accountStatus == 2)
