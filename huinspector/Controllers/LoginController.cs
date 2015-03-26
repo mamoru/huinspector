@@ -67,7 +67,7 @@ namespace huinspector.Controllers
                     }
                     else if (accountStatus == 3)
                     {
-                        ModelState.AddModelError("", "Dit account heeft geen toegang tot het docentengedeelte");
+                        ModelState.AddModelError("", "Dit account heeft geen toegang tot het studentengedeelte");
                     }
                 }
             }
@@ -91,7 +91,7 @@ namespace huinspector.Controllers
                 if (userValid)
                 {
                     //Account bestaat, maar mag hij ook inloggen?
-                    bool accountAcces = entities.User.Any(user => user.FirstName == username && user.Password == password && user.UserTypeId == 1);
+                    bool accountAcces = entities.User.Any(user => user.FirstName == username && user.Password == password && user.UserTypeId == 3);
                     if (accountAcces)
                     {
                         accountValid = 1; //Account heeft toegang
