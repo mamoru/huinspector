@@ -1,0 +1,75 @@
+﻿@model IEnumerable<huinspector.Models.Evaluation>
+
+@{
+    ViewBag.Title = "Overzicht Evaluaties";
+}
+
+<h2>Overzicht Evaluaties</h2>
+
+
+<p>
+    <span>
+        <a href="@Request.UrlReferrer" class="btn btn-default">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            Terug naar overzicht
+        </a>
+        <a href="@Url.Action("Create",new { id = ViewBag.ExamId })" class="btn btn-success">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            Nieuwe evaluatie
+        </a>
+    </span>
+    <hr />
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Resultaat
+        </th>
+        <th>
+            Tentamen
+        </th>
+        <th>
+            Naam
+        </th>
+        <th>
+            Download document
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Result)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Exam.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FirstName)
+                @Html.DisplayFor(modelItem => item.User.Insertion)
+                @Html.DisplayFor(modelItem => item.User.LastName)
+            </td>
+            <td>
+                @if (item.Document != null)
+                {
+                    <a href="@Url.Action("Download",new { id = item.Id })" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-down"></span>
+                        Download document
+                    </a>
+                }
+            </td>
+
+        </tr>
+    }
+
+</table>
+
+@if (ViewBag.Message != "")
+{
+    <h2 class="text-danger">@ViewBag.Message</h2>
+}
+@if (ViewBag.Result != 0)
+{
+    <h2 class="text-success">Het gemiddelde resultaat van de evaluatie is @ViewBag.Result</h2>
+}

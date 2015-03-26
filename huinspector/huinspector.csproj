@@ -160,6 +160,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Catalog\EvalCatalog.cs" />
+    <Compile Include="Controllers\EvaluationController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -291,6 +292,11 @@
     <Content Include="Views\UserType\Details.cshtml" />
     <Content Include="Views\UserType\Edit.cshtml" />
     <Content Include="Views\UserType\Index.cshtml" />
+    <Content Include="Views\Evaluation\Create.cshtml" />
+    <Content Include="Views\Evaluation\Delete.cshtml" />
+    <Content Include="Views\Evaluation\Details.cshtml" />
+    <Content Include="Views\Evaluation\Edit.cshtml" />
+    <Content Include="Views\Evaluation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
