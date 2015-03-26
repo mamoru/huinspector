@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using huinspector.Models;
+using System.IO;
 
 namespace huinspector.Catalog
 {
@@ -12,18 +13,34 @@ namespace huinspector.Catalog
         {
             using (var db = new HUInspectorEntities1())
             {
-                var eval = (from s in db.Evaluation where s.ExamId == id select s).Include(i => i.Exam).Include(i => i.User).ToList();
-                return eval;
+                return (from s in db.Evaluation where s.ExamId == id select s).Include(i => i.Exam).Include(i => i.User).ToList();
+
             }
         }
         public static IList<Evaluation> GetAll()
         {
             using (var db = new HUInspectorEntities1())
             {
-                var eval = db.Evaluation.Include(i => i.ExamId).Include(i => i.User).ToList();
+                return db.Evaluation.Include(i => i.ExamId).Include(i => i.User).ToList();
 
-                return eval;
             }
         }
+        public static int CheckUsers(int? id, int userType)
+        {
+            using (var db = new HUInspectorEntities1())
+            {
+                return (from s in db.Evaluation where s.ExamId == id && s.User.UserTypeId == userType select s).Include(i => i.Exam).Include(i => i.User).Count();
+            }
+        }
+
+        public static byte[] GetFile(int? id)
+        {
+            using (var db = new HUInspectorEntities1())
+            {
+                return (from s in db.Evaluation where s.Id == id select s.Document).SingleOrDefault();
+            }
+        }
+
+
     }
 }
