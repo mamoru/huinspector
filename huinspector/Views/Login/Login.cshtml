@@ -10,7 +10,7 @@
             @using (Html.BeginForm("Login", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
-                <h4>Login om gebruik te maken van HUI Docent.</h4>
+                <h4>Login om gebruik te maken van HUI Student.</h4>
                 <hr />
                 @Html.ValidationSummary(true)
                 <div class="form-group">

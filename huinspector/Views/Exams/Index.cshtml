@@ -33,11 +33,11 @@
 
                 @if (examSubscription.Count() == 0 && classroomsScheduled > 0)
                 {
-                    foreach (var classroom in item.ExamClassroom)
+                    foreach (var classroom in item.ExamClassroom.OrderBy(t => t.DateTime))
                     {
 
-                        @Html.ActionLink("Schrijf je in voor week " + classroom.Week, "SubscribeForExam"
-                            , new { id = item.Id, classroomid = classroom.Id }
+                        @Html.ActionLink("Schrijf je in voor week " + classroom.Week + " op " + classroom.DateTime.ToShortDateString() + " " + classroom.DateTime.ToShortTimeString(),  "SubscribeForExam"
+                            , new { id = item.Id, classroomid = classroom.Id, week = classroom.Week }
                             , new { onclick = "return confirm('Weet je zeker dat je je wilt inschrijven voor tentamen " + item.Name + " op week " + classroom.Week + "?');" })
                         <br />
                     }

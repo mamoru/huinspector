@@ -15,6 +15,19 @@ namespace huinspector.Controllers
     {
         private HUInspectorEntities db = new HUInspectorEntities();
 
+      private string CurrentUserName
+        {
+            get
+            {
+                string currentUserName = (string)Session["CurrentLoggedInUserName"];
+
+                if (currentUserName == null)
+                    return string.Empty;
+                else
+                    return currentUserName;
+            }
+        }
+
         private int CurrentUserID
         {
             get
@@ -42,7 +55,7 @@ namespace huinspector.Controllers
         }      
 
 
-        public ActionResult SubscribeForExam(int? id, int? classroomId)
+        public ActionResult SubscribeForExam(int? id, int? classroomId, int? week)
         {
             
             int parsedExamId;
@@ -52,7 +65,7 @@ namespace huinspector.Controllers
             else
                 parsedExamId = Convert.ToInt32(id);
 
-            ExamSubscription newExamSubscription = new ExamSubscription() { ExamId = parsedExamId, UserId = 4, ExamClassroomId = classroomId };
+            ExamSubscription newExamSubscription = new ExamSubscription() { ExamId = parsedExamId, UserId = CurrentUserID, ExamClassroomId = classroomId, Week = Convert.ToInt32(week) };
 
             HUInspectorEntities context = new HUInspectorEntities();
 

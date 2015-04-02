@@ -58,11 +58,6 @@ namespace huinspector.Controllers
             User loggedUser = UserCatalog.GetUser(CurrentUserID);
             eval.UserId = CurrentUserID;
 
-            using (var binaryReader = new BinaryReader(Insertmodel.Document.InputStream))
-            {
-                eval.Document = binaryReader.ReadBytes(Insertmodel.Document.ContentLength);
-            }
-
             eval.Result = Insertmodel.Result;
             if (Insertmodel.Document != null)
             {
@@ -72,6 +67,14 @@ namespace huinspector.Controllers
 
              var exam = ExamCatalog.GetExam(Insertmodel.ExamId);
 
+             SendMail(Insertmodel, loggedUser, exam);
+
+
+            return RedirectToAction("/Index", "Exams");
+        }
+
+        private static void SendMail(EvaluationInsertModel Insertmodel, User loggedUser, Exam exam)
+        {
 
             MailMessage mail = new MailMessage();
             mail.To.Add("uithuizermeeden.kwaliteit@gmail.com");
@@ -107,9 +110,6 @@ namespace huinspector.Controllers
             smtp.Credentials = new System.Net.NetworkCredential("huinspector@tfknulst.nl", "tpJQ6Ell");
             smtp.EnableSsl = false;
             smtp.Send(mail);
-
-
-            return RedirectToAction("/Index", "Exams");
         }
     }
 }

@@ -74,7 +74,7 @@ namespace huinspector.Controllers
             
             context.ExamSubscription.Add(newExamSubscription);
             context.SaveChanges();
-
+            
             var examSubscription = db.ExamSubscription.Include(e => e.Exam.Quarter).Include(e => e.User);
 
 
