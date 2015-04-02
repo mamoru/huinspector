@@ -161,6 +161,8 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Catalog\EvalCatalog.cs" />
     <Compile Include="Controllers\EvaluationController.cs" />
+    <Compile Include="Controllers\ExamsController.cs" />
+    <Compile Include="Controllers\ExamSubscriptionsController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -297,6 +299,18 @@
     <Content Include="Views\Evaluation\Details.cshtml" />
     <Content Include="Views\Evaluation\Edit.cshtml" />
     <Content Include="Views\Evaluation\Index.cshtml" />
+    <Content Include="Views\ExamSubscriptions\Create.cshtml" />
+    <Content Include="Views\ExamSubscriptions\Delete.cshtml" />
+    <Content Include="Views\ExamSubscriptions\Details.cshtml" />
+    <Content Include="Views\ExamSubscriptions\Edit.cshtml" />
+    <Content Include="Views\ExamSubscriptions\Index.cshtml" />
+    <Content Include="Views\ExamSubscriptions\SubscribeForExamList.cshtml" />
+    <Content Include="Views\Exams\Cijferoverzicht.cshtml" />
+    <Content Include="Views\Exams\Create.cshtml" />
+    <Content Include="Views\Exams\Delete.cshtml" />
+    <Content Include="Views\Exams\Details.cshtml" />
+    <Content Include="Views\Exams\Edit.cshtml" />
+    <Content Include="Views\Exams\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

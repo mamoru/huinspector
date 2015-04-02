@@ -19,6 +19,7 @@ namespace huinspector.Models
         public Nullable<decimal> Result { get; set; }
         public int Id { get; set; }
         public byte[] Document { get; set; }
+        public string Mimetype { get; set; }
     
         public virtual Exam Exam { get; set; }
         public virtual User User { get; set; }

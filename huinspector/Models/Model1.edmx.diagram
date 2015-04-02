@@ -4,26 +4,26 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="85724b3226b6404e9309a796bde46cce" Name="Diagram1">
-        <EntityTypeShape EntityType="HUInspectorModel.Classroom" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.Evaluation" Width="1.5" PointX="5.25" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.Exam" Width="1.5" PointX="8.25" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.ExamClassroom" Width="1.5" PointX="10.5" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.ExamSubscription" Width="1.5" PointX="13.5" PointY="4.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.Quarter" Width="1.5" PointX="6" PointY="1.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.User" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="HUInspectorModel.UserType" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
-        <AssociationConnector Association="HUInspectorModel.FK_ExamClassroom_Classroom" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_Evaluation_Exam" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_Evaluation_User" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_Exam_Creator" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_Exam_Quarter" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_Exam_Surveillant" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_ExamClassroom_Exam" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_ExamSubscription_Exam" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_ExamSubscription_User" ManuallyRouted="false" />
-        <AssociationConnector Association="HUInspectorModel.FK_User_UserType" ManuallyRouted="false" />
+      <Diagram DiagramId="f5f08fe15f9a4070b008d2d8b0695c10" Name="Diagram1">
+        <EntityTypeShape EntityType="HUInspectorModel.Classroom" Width="1.5" PointX="8.25" PointY="0.75" />
+        <EntityTypeShape EntityType="HUInspectorModel.Exam" Width="1.5" PointX="5.25" PointY="3.5" />
+        <EntityTypeShape EntityType="HUInspectorModel.ExamClassroom" Width="1.5" PointX="10.5" PointY="4.5" />
+        <EntityTypeShape EntityType="HUInspectorModel.ExamSubscription" Width="1.5" PointX="12.75" PointY="4.25" />
+        <EntityTypeShape EntityType="HUInspectorModel.Quarter" Width="1.5" PointX="3" PointY="0.875" />
+        <EntityTypeShape EntityType="HUInspectorModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="8.375" />
+        <EntityTypeShape EntityType="HUInspectorModel.User" Width="1.5" PointX="3" PointY="4.125" />
+        <EntityTypeShape EntityType="HUInspectorModel.UserType" Width="1.5" PointX="0.75" PointY="5" />
+        <AssociationConnector Association="HUInspectorModel.FK_ExamClassroom_Classroom" />
+        <AssociationConnector Association="HUInspectorModel.FK_Exam_Creator" />
+        <AssociationConnector Association="HUInspectorModel.FK_Exam_Quarter" />
+        <AssociationConnector Association="HUInspectorModel.FK_ExamClassroom_Exam" />
+        <AssociationConnector Association="HUInspectorModel.FK_ExamSubscription_Exam" />
+        <AssociationConnector Association="HUInspectorModel.FK_ExamSubscription_ExamClassroom" />
+        <AssociationConnector Association="HUInspectorModel.FK_ExamSubscription_User" />
+        <AssociationConnector Association="HUInspectorModel.FK_User_UserType" />
+        <EntityTypeShape EntityType="HUInspectorModel.Evaluation" Width="1.5" PointX="7.5" PointY="4.5" />
+        <AssociationConnector Association="HUInspectorModel.FK_Evaluation_Exam" />
+        <AssociationConnector Association="HUInspectorModel.FK_Evaluation_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

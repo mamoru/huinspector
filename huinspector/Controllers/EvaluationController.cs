@@ -15,7 +15,7 @@ namespace huinspector.Controllers
 {
     public class EvaluationController : Controller
     {
-        private HUInspectorEntities1 db = new HUInspectorEntities1();
+        private HUInspectorEntities db = new HUInspectorEntities();
 
         // GET: /Evaluatie/5
         [Authorize]
@@ -117,7 +117,7 @@ namespace huinspector.Controllers
             }
 
             ViewBag.UserId = new SelectList(db.User, "Id", "FirstName");
-            ViewBag.ExamName = ExamCatalog.GetName(id);
+            //ViewBag.ExamName = ExamCatalog.GetName(id); ??????
             //Exam vast voorvullen, deze wordt niet getoond maar is wel verplicht
             var model = new Evaluation
             {

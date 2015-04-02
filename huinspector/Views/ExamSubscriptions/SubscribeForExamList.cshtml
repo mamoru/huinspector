@@ -1,0 +1,86 @@
+﻿@model IEnumerable<huinspector.Models.ExamSubscription>
+
+<h2>Inschrijven tentamens</h2>
+<br />
+<table class="table" width="600px">
+    <tr>
+        <th>
+            Examen naam
+        </th>
+        <th>
+            Periode
+        </th>
+
+        <th></th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    
+    //Int32 UserId moet nog variabel
+    Int32 UserInSubDb = item.UserId;
+    Int32 UserinExaDb = item.Exam.Id;
+    Int32 UserId = 4;
+    
+
+    if (UserId != UserInSubDb) { 
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Exam.Name), @Html.DisplayFor(modelItem => item.Exam.Speciality), @Html.DisplayFor(modelItem => item.ExamId) 
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Exam.Quarter.QuarterName)
+        </td>
+        <td>
+            @Html.ActionLink("Schrijf in", "SubscribeForExam", new { id = item.ExamId })
+        </td>
+    </tr>
+    }
+}
+
+</table>
+
+<h3>Je bent voor de volgende tentamens ingeschreven:</h3>
+<br />
+<table class="table" width="600px">
+    <tr>
+        <th>
+            Examen naam
+        </th>
+        <th>
+            Periode
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+
+        //Int32 UserId moet nog variabel
+        Int32 UserInSubDb = item.UserId;
+        Int32 UserinExaDb = item.Exam.Id;
+        Int32 UserId = 4;
+
+
+        if (UserId == UserInSubDb)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Exam.Name), @Html.DisplayFor(modelItem => item.Exam.Speciality), @Html.DisplayFor(modelItem => item.ExamId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Exam.Quarter.QuarterName)
+                </td>
+                <td>
+                    <p>Ingeschreven</p>
+                </td>
+            </tr>
+        }
+    }
+
+</table>
+
+<div>
+    <a href="~/Home/Tentamen"><button class="btn btn-danger">Ga terug</button></a>
+</div>

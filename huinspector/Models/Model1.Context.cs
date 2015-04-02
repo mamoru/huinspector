@@ -13,10 +13,10 @@ namespace huinspector.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class HUInspectorEntities1 : DbContext
+    public partial class HUInspectorEntities : DbContext
     {
-        public HUInspectorEntities1()
-            : base("name=HUInspectorEntities1")
+        public HUInspectorEntities()
+            : base("name=HUInspectorEntities")
         {
         }
     
@@ -26,7 +26,6 @@ namespace huinspector.Models
         }
     
         public virtual DbSet<Classroom> Classroom { get; set; }
-        public virtual DbSet<Evaluation> Evaluation { get; set; }
         public virtual DbSet<Exam> Exam { get; set; }
         public virtual DbSet<ExamClassroom> ExamClassroom { get; set; }
         public virtual DbSet<ExamSubscription> ExamSubscription { get; set; }
@@ -34,5 +33,6 @@ namespace huinspector.Models
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserType> UserType { get; set; }
+        public virtual DbSet<Evaluation> Evaluation { get; set; }
     }
 }

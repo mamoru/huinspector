@@ -14,13 +14,11 @@ namespace huinspector.Models
     
     public partial class User
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
-            this.Evaluation = new HashSet<Evaluation>();
             this.Exam = new HashSet<Exam>();
-            this.Exam1 = new HashSet<Exam>();
             this.ExamSubscription = new HashSet<ExamSubscription>();
+            this.Evaluation = new HashSet<Evaluation>();
         }
     
         public int Id { get; set; }
@@ -31,14 +29,9 @@ namespace huinspector.Models
         public string Password { get; set; }
         public int UserTypeId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Evaluation> Evaluation { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Exam> Exam { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Exam> Exam1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ExamSubscription> ExamSubscription { get; set; }
         public virtual UserType UserType { get; set; }
+        public virtual ICollection<Evaluation> Evaluation { get; set; }
     }
 }

@@ -1,0 +1,81 @@
+﻿@model IEnumerable<huinspector.Models.Exam>
+<h2>Inschrijven tentamens</h2>
+<br />
+<table class="table" width="600px">
+    <tr>
+        <th>
+            Examen naam
+        </th>
+        <th>
+            Periode
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+
+        Int32 UserId = Convert.ToInt32(ViewData["CurrentUserID"]);
+
+        Int32 UserInDb = item.ExamSubscription.Where(t => t.UserId == UserId).Count();
+        Int32 classroomsScheduled = item.ExamClassroom.Count();
+        
+        
+        if (UserInDb == 0 && classroomsScheduled > 0)
+        {
+            <tr>
+                <td>
+                    
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
+                </td>
+                <td>
+
+                    @foreach(var classroom in item.ExamClassroom)
+                    {
+                        
+                        @Html.ActionLink("Schrijf je in voor week " + classroom.Week, "SubscribeForExam"
+                        ,new { id = item.Id, classroomid = classroom.Id }
+                        , new { onclick = "return confirm('Weet je zeker dat je je wilt inschrijven voor tentamen "+ item.Name + " op week " + classroom.Week + "?');" })
+                        <br/>
+                    }
+                </td>
+            </tr>
+        }
+        else if (UserInDb > 0)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
+                </td>
+                <td>
+                    Ingeschreven
+    
+                </td>
+            </tr>
+        }
+        else if (classroomsScheduled == 0)
+        {
+                        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
+                </td>
+                <td>
+                    Nog niet ingeroosterd
+    
+                </td>
+            </tr>
+        }
+    }
+
+</table>
+

@@ -12,7 +12,7 @@ namespace huinspector.Controllers
 {
     public class UserController : Controller
     {
-        private HUInspectorEntities1 db = new HUInspectorEntities1();
+        private HUInspectorEntities db = new HUInspectorEntities();
 
         // GET: /User/
         public ActionResult Index()

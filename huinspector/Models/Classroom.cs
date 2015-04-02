@@ -14,7 +14,6 @@ namespace huinspector.Models
     
     public partial class Classroom
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Classroom()
         {
             this.ExamClassroom = new HashSet<ExamClassroom>();
@@ -25,7 +24,6 @@ namespace huinspector.Models
         public bool HasComputers { get; set; }
         public int Places { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ExamClassroom> ExamClassroom { get; set; }
     }
 }

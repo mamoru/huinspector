@@ -44,13 +44,15 @@ namespace huinspector.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (HUInspectorEntities1 entities = new HUInspectorEntities1())
+                using (HUInspectorEntities entities = new HUInspectorEntities())
                 {
-                    int accountStatus = CheckAccount(model.FirstName, model.Password, model);
+                    int accountStatus = CheckAccount(model.FirstName, model.Password,ref model);
 
                     if (accountStatus == 1)
                     {
                         FormsAuthentication.SetAuthCookie(model.FirstName, false);
+                        Session.Add("CurrentLoggedInUserID", model.Id);
+                        Session.Add("CurrentLoggedInUserName", model.FirstName);
                         if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/") && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
                         {
                             return Redirect(returnUrl);
@@ -79,15 +81,21 @@ namespace huinspector.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private int CheckAccount(string firstname, string pass, User model)
+        private int CheckAccount(string firstname, string pass, ref User model)
         {
             string username = firstname;
             string password = pass;
             int accountValid = 2;
 
-            using (HUInspectorEntities1 entities = new HUInspectorEntities1())
+            using (HUInspectorEntities entities = new HUInspectorEntities())
             {
-                bool userValid = entities.User.Any(user => user.FirstName == username && user.Password == password);
+                model = null;
+
+                if (entities.User.Any(user => user.FirstName == username && user.Password == password))
+                    model = entities.User.First(user => user.FirstName == username && user.Password == password);
+
+                bool userValid = model != null;
+
                 if (userValid)
                 {
                     //Account bestaat, maar mag hij ook inloggen?

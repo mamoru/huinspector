@@ -14,7 +14,6 @@ namespace huinspector.Models
     
     public partial class Quarter
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Quarter()
         {
             this.Exam = new HashSet<Exam>();
@@ -24,7 +23,6 @@ namespace huinspector.Models
         public string QuarterName { get; set; }
         public int SortOrder { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Exam> Exam { get; set; }
     }
 }

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<huinspector.Models.ExamSubscription>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Cijferoverzicht</h2> <P>van <b>@ViewData["CurrentUserName"]</b></P>
+
+
+<table class="table table-hover" style="width: 600px;">
+    <tr>
+        <th>
+            Examen naam
+        </th>
+        <th>
+            Specialisatie
+        </th>
+        <th>
+            Afgenomen in week
+        </th>
+        <th>
+            Resultaat
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        int currentUserId = Convert.ToInt32(ViewData["CurrentUserID"]);
+        //moet variabel gemaakt worden met inloggen(userID)
+        if (@item.UserId == currentUserId && @item.Result != null)
+        {
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Exam.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Exam.Speciality)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Week)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Result)
+                </td>
+            </tr>
+        }
+    }
+
+
+</table>

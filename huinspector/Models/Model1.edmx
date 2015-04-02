@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="HUInspectorModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="HUInspectorModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Classroom">
           <Key>
             <PropertyRef Name="Id" />
@@ -23,6 +23,7 @@
           <Property Name="Result" Type="decimal" Precision="3" Scale="1" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Document" Type="varbinary" MaxLength="8000" />
+          <Property Name="Mimetype" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Exam">
           <Key>
@@ -32,12 +33,15 @@
           <Property Name="Name" Type="varchar" MaxLength="150" />
           <Property Name="Creator" Type="int" Nullable="false" />
           <Property Name="Speciality" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Surveillant" Type="bit" Nullable="false" />
           <Property Name="ComputerNeeded" Type="bit" Nullable="false" />
-          <Property Name="Surveillant" Type="int" Nullable="false" />
           <Property Name="ExpectedStudents" Type="int" Nullable="false" />
           <Property Name="ResultIsDecimal" Type="bit" Nullable="false" />
           <Property Name="QuarterId" Type="int" Nullable="false" />
           <Property Name="MinutesDuration" Type="int" Nullable="false" />
+          <Property Name="EuropeanCredits" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="ResultsEntered" Type="datetime" />
+          <Property Name="IsHandled" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ExamClassroom">
           <Key>
@@ -83,7 +87,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Insertion" Type="varchar" MaxLength="50" />
           <Property Name="LastName" Type="varchar" MaxLength="200" Nullable="false" />
@@ -146,18 +150,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Exam_Surveillant">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Exam" Type="Self.Exam" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Exam">
-              <PropertyRef Name="Surveillant" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_ExamClassroom_Classroom">
           <End Role="Classroom" Type="Self.Classroom" Multiplicity="1" />
           <End Role="ExamClassroom" Type="Self.ExamClassroom" Multiplicity="*" />
@@ -191,6 +183,18 @@
             </Principal>
             <Dependent Role="ExamSubscription">
               <PropertyRef Name="ExamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExamSubscription_ExamClassroom">
+          <End Role="ExamClassroom" Type="Self.ExamClassroom" Multiplicity="0..1" />
+          <End Role="ExamSubscription" Type="Self.ExamSubscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExamClassroom">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExamSubscription">
+              <PropertyRef Name="ExamClassroomId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -244,10 +248,6 @@
             <End Role="Quarter" EntitySet="Quarter" />
             <End Role="Exam" EntitySet="Exam" />
           </AssociationSet>
-          <AssociationSet Name="FK_Exam_Surveillant" Association="Self.FK_Exam_Surveillant">
-            <End Role="User" EntitySet="User" />
-            <End Role="Exam" EntitySet="Exam" />
-          </AssociationSet>
           <AssociationSet Name="FK_ExamClassroom_Classroom" Association="Self.FK_ExamClassroom_Classroom">
             <End Role="Classroom" EntitySet="Classroom" />
             <End Role="ExamClassroom" EntitySet="ExamClassroom" />
@@ -260,6 +260,10 @@
             <End Role="Exam" EntitySet="Exam" />
             <End Role="ExamSubscription" EntitySet="ExamSubscription" />
           </AssociationSet>
+          <AssociationSet Name="FK_ExamSubscription_ExamClassroom" Association="Self.FK_ExamSubscription_ExamClassroom">
+            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
+            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
+          </AssociationSet>
           <AssociationSet Name="FK_ExamSubscription_User" Association="Self.FK_ExamSubscription_User">
             <End Role="User" EntitySet="User" />
             <End Role="ExamSubscription" EntitySet="ExamSubscription" />
@@ -269,32 +273,70 @@
             <End Role="User" EntitySet="User" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="HUInspectorModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="HUInspectorModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="HUInspectorEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Classroom" EntityType="HUInspectorModel.Classroom" />
+          <EntitySet Name="Exam" EntityType="HUInspectorModel.Exam" />
+          <EntitySet Name="ExamClassroom" EntityType="HUInspectorModel.ExamClassroom" />
+          <EntitySet Name="ExamSubscription" EntityType="HUInspectorModel.ExamSubscription" />
+          <EntitySet Name="Quarter" EntityType="HUInspectorModel.Quarter" />
+          <EntitySet Name="sysdiagrams" EntityType="HUInspectorModel.sysdiagrams" />
+          <EntitySet Name="User" EntityType="HUInspectorModel.User" />
+          <EntitySet Name="UserType" EntityType="HUInspectorModel.UserType" />
+          <AssociationSet Name="FK_ExamClassroom_Classroom" Association="HUInspectorModel.FK_ExamClassroom_Classroom">
+            <End Role="Classroom" EntitySet="Classroom" />
+            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Exam_Creator" Association="HUInspectorModel.FK_Exam_Creator">
+            <End Role="User" EntitySet="User" />
+            <End Role="Exam" EntitySet="Exam" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Exam_Quarter" Association="HUInspectorModel.FK_Exam_Quarter">
+            <End Role="Quarter" EntitySet="Quarter" />
+            <End Role="Exam" EntitySet="Exam" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExamClassroom_Exam" Association="HUInspectorModel.FK_ExamClassroom_Exam">
+            <End Role="Exam" EntitySet="Exam" />
+            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExamSubscription_Exam" Association="HUInspectorModel.FK_ExamSubscription_Exam">
+            <End Role="Exam" EntitySet="Exam" />
+            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExamSubscription_ExamClassroom" Association="HUInspectorModel.FK_ExamSubscription_ExamClassroom">
+            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
+            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExamSubscription_User" Association="HUInspectorModel.FK_ExamSubscription_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_UserType" Association="HUInspectorModel.FK_User_UserType">
+            <End Role="UserType" EntitySet="UserType" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
+          <EntitySet Name="Evaluation" EntityType="HUInspectorModel.Evaluation" />
+          <AssociationSet Name="FK_Evaluation_Exam" Association="HUInspectorModel.FK_Evaluation_Exam">
+            <End Role="Exam" EntitySet="Exam" />
+            <End Role="Evaluation" EntitySet="Evaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Evaluation_User" Association="HUInspectorModel.FK_Evaluation_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Evaluation" EntitySet="Evaluation" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="Classroom">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="HasComputers" Type="Boolean" Nullable="false" />
           <Property Name="Places" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="ExamClassroom" Relationship="Self.FK_ExamClassroom_Classroom" FromRole="Classroom" ToRole="ExamClassroom" />
-        </EntityType>
-        <EntityType Name="Evaluation">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="ExamId" Type="Int32" Nullable="false" />
-          <Property Name="Result" Type="Decimal" Precision="3" Scale="1" />
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Document" Type="Binary" MaxLength="8000" FixedLength="false" />
-          <NavigationProperty Name="Exam" Relationship="Self.FK_Evaluation_Exam" FromRole="Evaluation" ToRole="Exam" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Evaluation_User" FromRole="Evaluation" ToRole="User" />
+          <NavigationProperty Name="ExamClassroom" Relationship="HUInspectorModel.FK_ExamClassroom_Classroom" FromRole="Classroom" ToRole="ExamClassroom" />
         </EntityType>
         <EntityType Name="Exam">
           <Key>
@@ -303,19 +345,21 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="Creator" Type="Int32" Nullable="false" />
-          <Property Name="Speciality" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Speciality" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Surveillant" Type="Boolean" Nullable="false" />
           <Property Name="ComputerNeeded" Type="Boolean" Nullable="false" />
-          <Property Name="Surveillant" Type="Int32" Nullable="false" />
           <Property Name="ExpectedStudents" Type="Int32" Nullable="false" />
           <Property Name="ResultIsDecimal" Type="Boolean" Nullable="false" />
           <Property Name="QuarterId" Type="Int32" Nullable="false" />
           <Property Name="MinutesDuration" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Evaluation" Relationship="Self.FK_Evaluation_Exam" FromRole="Exam" ToRole="Evaluation" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Exam_Creator" FromRole="Exam" ToRole="User" />
-          <NavigationProperty Name="Quarter" Relationship="Self.FK_Exam_Quarter" FromRole="Exam" ToRole="Quarter" />
-          <NavigationProperty Name="User1" Relationship="Self.FK_Exam_Surveillant" FromRole="Exam" ToRole="User" />
-          <NavigationProperty Name="ExamClassroom" Relationship="Self.FK_ExamClassroom_Exam" FromRole="Exam" ToRole="ExamClassroom" />
-          <NavigationProperty Name="ExamSubscription" Relationship="Self.FK_ExamSubscription_Exam" FromRole="Exam" ToRole="ExamSubscription" />
+          <Property Name="EuropeanCredits" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="ResultsEntered" Type="DateTime" Precision="3" />
+          <Property Name="IsHandled" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="HUInspectorModel.FK_Exam_Creator" FromRole="Exam" ToRole="User" />
+          <NavigationProperty Name="Quarter" Relationship="HUInspectorModel.FK_Exam_Quarter" FromRole="Exam" ToRole="Quarter" />
+          <NavigationProperty Name="ExamClassroom" Relationship="HUInspectorModel.FK_ExamClassroom_Exam" FromRole="Exam" ToRole="ExamClassroom" />
+          <NavigationProperty Name="ExamSubscription" Relationship="HUInspectorModel.FK_ExamSubscription_Exam" FromRole="Exam" ToRole="ExamSubscription" />
+          <NavigationProperty Name="Evaluation" Relationship="HUInspectorModel.FK_Evaluation_Exam" FromRole="Exam" ToRole="Evaluation" />
         </EntityType>
         <EntityType Name="ExamClassroom">
           <Key>
@@ -326,8 +370,9 @@
           <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Week" Type="Int32" Nullable="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <NavigationProperty Name="Classroom" Relationship="Self.FK_ExamClassroom_Classroom" FromRole="ExamClassroom" ToRole="Classroom" />
-          <NavigationProperty Name="Exam" Relationship="Self.FK_ExamClassroom_Exam" FromRole="ExamClassroom" ToRole="Exam" />
+          <NavigationProperty Name="Classroom" Relationship="HUInspectorModel.FK_ExamClassroom_Classroom" FromRole="ExamClassroom" ToRole="Classroom" />
+          <NavigationProperty Name="Exam" Relationship="HUInspectorModel.FK_ExamClassroom_Exam" FromRole="ExamClassroom" ToRole="Exam" />
+          <NavigationProperty Name="ExamSubscription" Relationship="HUInspectorModel.FK_ExamSubscription_ExamClassroom" FromRole="ExamClassroom" ToRole="ExamSubscription" />
         </EntityType>
         <EntityType Name="ExamSubscription">
           <Key>
@@ -340,23 +385,24 @@
           <Property Name="ExamClassroomId" Type="Int32" />
           <Property Name="Week" Type="Int32" Nullable="false" />
           <Property Name="IsNA" Type="Boolean" />
-          <NavigationProperty Name="Exam" Relationship="Self.FK_ExamSubscription_Exam" FromRole="ExamSubscription" ToRole="Exam" />
-          <NavigationProperty Name="User" Relationship="Self.FK_ExamSubscription_User" FromRole="ExamSubscription" ToRole="User" />
+          <NavigationProperty Name="Exam" Relationship="HUInspectorModel.FK_ExamSubscription_Exam" FromRole="ExamSubscription" ToRole="Exam" />
+          <NavigationProperty Name="ExamClassroom" Relationship="HUInspectorModel.FK_ExamSubscription_ExamClassroom" FromRole="ExamSubscription" ToRole="ExamClassroom" />
+          <NavigationProperty Name="User" Relationship="HUInspectorModel.FK_ExamSubscription_User" FromRole="ExamSubscription" ToRole="User" />
         </EntityType>
         <EntityType Name="Quarter">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="QuarterName" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="QuarterName" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="SortOrder" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Exam" Relationship="Self.FK_Exam_Quarter" FromRole="Quarter" ToRole="Exam" />
+          <NavigationProperty Name="Exam" Relationship="HUInspectorModel.FK_Exam_Quarter" FromRole="Quarter" ToRole="Exam" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
           </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="principal_id" Type="Int32" Nullable="false" />
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
@@ -366,30 +412,29 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Insertion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="LastName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Mail" Type="String" MaxLength="300" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Mail" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
           <Property Name="Password" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
           <Property Name="UserTypeId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Evaluation" Relationship="Self.FK_Evaluation_User" FromRole="User" ToRole="Evaluation" />
-          <NavigationProperty Name="Exam" Relationship="Self.FK_Exam_Creator" FromRole="User" ToRole="Exam" />
-          <NavigationProperty Name="Exam1" Relationship="Self.FK_Exam_Surveillant" FromRole="User" ToRole="Exam" />
-          <NavigationProperty Name="ExamSubscription" Relationship="Self.FK_ExamSubscription_User" FromRole="User" ToRole="ExamSubscription" />
-          <NavigationProperty Name="UserType" Relationship="Self.FK_User_UserType" FromRole="User" ToRole="UserType" />
+          <NavigationProperty Name="Exam" Relationship="HUInspectorModel.FK_Exam_Creator" FromRole="User" ToRole="Exam" />
+          <NavigationProperty Name="ExamSubscription" Relationship="HUInspectorModel.FK_ExamSubscription_User" FromRole="User" ToRole="ExamSubscription" />
+          <NavigationProperty Name="UserType" Relationship="HUInspectorModel.FK_User_UserType" FromRole="User" ToRole="UserType" />
+          <NavigationProperty Name="Evaluation" Relationship="HUInspectorModel.FK_Evaluation_User" FromRole="User" ToRole="Evaluation" />
         </EntityType>
         <EntityType Name="UserType">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_User_UserType" FromRole="UserType" ToRole="User" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="User" Relationship="HUInspectorModel.FK_User_UserType" FromRole="UserType" ToRole="User" />
         </EntityType>
         <Association Name="FK_ExamClassroom_Classroom">
-          <End Role="Classroom" Type="Self.Classroom" Multiplicity="1" />
-          <End Role="ExamClassroom" Type="Self.ExamClassroom" Multiplicity="*" />
+          <End Type="HUInspectorModel.Classroom" Role="Classroom" Multiplicity="1" />
+          <End Type="HUInspectorModel.ExamClassroom" Role="ExamClassroom" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Classroom">
               <PropertyRef Name="Id" />
@@ -399,33 +444,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Evaluation_Exam">
-          <End Role="Exam" Type="Self.Exam" Multiplicity="1" />
-          <End Role="Evaluation" Type="Self.Evaluation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Exam">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Evaluation">
-              <PropertyRef Name="ExamId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Evaluation_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Evaluation" Type="Self.Evaluation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Evaluation">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Exam_Creator">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Exam" Type="Self.Exam" Multiplicity="*" />
+          <End Type="HUInspectorModel.User" Role="User" Multiplicity="1" />
+          <End Type="HUInspectorModel.Exam" Role="Exam" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="Id" />
@@ -436,8 +457,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Exam_Quarter">
-          <End Role="Quarter" Type="Self.Quarter" Multiplicity="1" />
-          <End Role="Exam" Type="Self.Exam" Multiplicity="*" />
+          <End Type="HUInspectorModel.Quarter" Role="Quarter" Multiplicity="1" />
+          <End Type="HUInspectorModel.Exam" Role="Exam" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Quarter">
               <PropertyRef Name="Id" />
@@ -447,21 +468,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Exam_Surveillant">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Exam" Type="Self.Exam" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Exam">
-              <PropertyRef Name="Surveillant" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_ExamClassroom_Exam">
-          <End Role="Exam" Type="Self.Exam" Multiplicity="1" />
-          <End Role="ExamClassroom" Type="Self.ExamClassroom" Multiplicity="*" />
+          <End Type="HUInspectorModel.Exam" Role="Exam" Multiplicity="1" />
+          <End Type="HUInspectorModel.ExamClassroom" Role="ExamClassroom" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Exam">
               <PropertyRef Name="Id" />
@@ -472,8 +481,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ExamSubscription_Exam">
-          <End Role="Exam" Type="Self.Exam" Multiplicity="1" />
-          <End Role="ExamSubscription" Type="Self.ExamSubscription" Multiplicity="*" />
+          <End Type="HUInspectorModel.Exam" Role="Exam" Multiplicity="1" />
+          <End Type="HUInspectorModel.ExamSubscription" Role="ExamSubscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Exam">
               <PropertyRef Name="Id" />
@@ -483,9 +492,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ExamSubscription_ExamClassroom">
+          <End Type="HUInspectorModel.ExamClassroom" Role="ExamClassroom" Multiplicity="0..1" />
+          <End Type="HUInspectorModel.ExamSubscription" Role="ExamSubscription" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExamClassroom">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExamSubscription">
+              <PropertyRef Name="ExamClassroomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ExamSubscription_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="ExamSubscription" Type="Self.ExamSubscription" Multiplicity="*" />
+          <End Type="HUInspectorModel.User" Role="User" Multiplicity="1" />
+          <End Type="HUInspectorModel.ExamSubscription" Role="ExamSubscription" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="Id" />
@@ -496,8 +517,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_User_UserType">
-          <End Role="UserType" Type="Self.UserType" Multiplicity="1" />
-          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <End Type="HUInspectorModel.UserType" Role="UserType" Multiplicity="1" />
+          <End Type="HUInspectorModel.User" Role="User" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="UserType">
               <PropertyRef Name="Id" />
@@ -507,162 +528,152 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="HUInspectorEntities1" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Classroom" EntityType="Self.Classroom" />
-          <EntitySet Name="Evaluation" EntityType="Self.Evaluation" />
-          <EntitySet Name="Exam" EntityType="Self.Exam" />
-          <EntitySet Name="ExamClassroom" EntityType="Self.ExamClassroom" />
-          <EntitySet Name="ExamSubscription" EntityType="Self.ExamSubscription" />
-          <EntitySet Name="Quarter" EntityType="Self.Quarter" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
-          <EntitySet Name="User" EntityType="Self.User" />
-          <EntitySet Name="UserType" EntityType="Self.UserType" />
-          <AssociationSet Name="FK_ExamClassroom_Classroom" Association="Self.FK_ExamClassroom_Classroom">
-            <End Role="Classroom" EntitySet="Classroom" />
-            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Evaluation_Exam" Association="Self.FK_Evaluation_Exam">
-            <End Role="Exam" EntitySet="Exam" />
-            <End Role="Evaluation" EntitySet="Evaluation" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Evaluation_User" Association="Self.FK_Evaluation_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="Evaluation" EntitySet="Evaluation" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Exam_Creator" Association="Self.FK_Exam_Creator">
-            <End Role="User" EntitySet="User" />
-            <End Role="Exam" EntitySet="Exam" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Exam_Quarter" Association="Self.FK_Exam_Quarter">
-            <End Role="Quarter" EntitySet="Quarter" />
-            <End Role="Exam" EntitySet="Exam" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Exam_Surveillant" Association="Self.FK_Exam_Surveillant">
-            <End Role="User" EntitySet="User" />
-            <End Role="Exam" EntitySet="Exam" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ExamClassroom_Exam" Association="Self.FK_ExamClassroom_Exam">
-            <End Role="Exam" EntitySet="Exam" />
-            <End Role="ExamClassroom" EntitySet="ExamClassroom" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ExamSubscription_Exam" Association="Self.FK_ExamSubscription_Exam">
-            <End Role="Exam" EntitySet="Exam" />
-            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ExamSubscription_User" Association="Self.FK_ExamSubscription_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="ExamSubscription" EntitySet="ExamSubscription" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_UserType" Association="Self.FK_User_UserType">
-            <End Role="UserType" EntitySet="UserType" />
-            <End Role="User" EntitySet="User" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema>
+        <EntityType Name="Evaluation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="ExamId" Type="Int32" Nullable="false" />
+          <Property Name="Result" Type="Decimal" Precision="3" Scale="1" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Document" Type="Binary" MaxLength="8000" FixedLength="false" />
+          <Property Name="Mimetype" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Exam" Relationship="HUInspectorModel.FK_Evaluation_Exam" FromRole="Evaluation" ToRole="Exam" />
+          <NavigationProperty Name="User" Relationship="HUInspectorModel.FK_Evaluation_User" FromRole="Evaluation" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Evaluation_Exam">
+          <End Type="HUInspectorModel.Exam" Role="Exam" Multiplicity="1" />
+          <End Type="HUInspectorModel.Evaluation" Role="Evaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Exam">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Evaluation">
+              <PropertyRef Name="ExamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Evaluation_User">
+          <End Type="HUInspectorModel.User" Role="User" Multiplicity="1" />
+          <End Type="HUInspectorModel.Evaluation" Role="Evaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Evaluation">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="HUInspectorModelStoreContainer" CdmEntityContainer="HUInspectorEntities1">
+        <EntityContainerMapping StorageEntityContainer="HUInspectorModelStoreContainer" CdmEntityContainer="HUInspectorEntities">
           <EntitySetMapping Name="Classroom">
             <EntityTypeMapping TypeName="HUInspectorModel.Classroom">
               <MappingFragment StoreEntitySet="Classroom">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="HasComputers" ColumnName="HasComputers" />
                 <ScalarProperty Name="Places" ColumnName="Places" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Evaluation">
-            <EntityTypeMapping TypeName="HUInspectorModel.Evaluation">
-              <MappingFragment StoreEntitySet="Evaluation">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
-                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="HasComputers" ColumnName="HasComputers" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Document" ColumnName="Document" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Exam">
             <EntityTypeMapping TypeName="HUInspectorModel.Exam">
               <MappingFragment StoreEntitySet="Exam">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Creator" ColumnName="Creator" />
-                <ScalarProperty Name="Speciality" ColumnName="Speciality" />
+                <ScalarProperty Name="IsHandled" ColumnName="IsHandled" />
+                <ScalarProperty Name="ResultsEntered" ColumnName="ResultsEntered" />
+                <ScalarProperty Name="EuropeanCredits" ColumnName="EuropeanCredits" />
+                <ScalarProperty Name="MinutesDuration" ColumnName="MinutesDuration" />
+                <ScalarProperty Name="QuarterId" ColumnName="QuarterId" />
+                <ScalarProperty Name="ResultIsDecimal" ColumnName="ResultIsDecimal" />
+                <ScalarProperty Name="ExpectedStudents" ColumnName="ExpectedStudents" />
                 <ScalarProperty Name="ComputerNeeded" ColumnName="ComputerNeeded" />
                 <ScalarProperty Name="Surveillant" ColumnName="Surveillant" />
-                <ScalarProperty Name="ExpectedStudents" ColumnName="ExpectedStudents" />
-                <ScalarProperty Name="ResultIsDecimal" ColumnName="ResultIsDecimal" />
-                <ScalarProperty Name="QuarterId" ColumnName="QuarterId" />
-                <ScalarProperty Name="MinutesDuration" ColumnName="MinutesDuration" />
+                <ScalarProperty Name="Speciality" ColumnName="Speciality" />
+                <ScalarProperty Name="Creator" ColumnName="Creator" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ExamClassroom">
             <EntityTypeMapping TypeName="HUInspectorModel.ExamClassroom">
               <MappingFragment StoreEntitySet="ExamClassroom">
-                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
-                <ScalarProperty Name="ClassroomId" ColumnName="ClassroomId" />
-                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
-                <ScalarProperty Name="Week" ColumnName="Week" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Week" ColumnName="Week" />
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="ClassroomId" ColumnName="ClassroomId" />
+                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ExamSubscription">
             <EntityTypeMapping TypeName="HUInspectorModel.ExamSubscription">
               <MappingFragment StoreEntitySet="ExamSubscription">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Result" ColumnName="Result" />
-                <ScalarProperty Name="ExamClassroomId" ColumnName="ExamClassroomId" />
-                <ScalarProperty Name="Week" ColumnName="Week" />
                 <ScalarProperty Name="IsNA" ColumnName="IsNA" />
+                <ScalarProperty Name="Week" ColumnName="Week" />
+                <ScalarProperty Name="ExamClassroomId" ColumnName="ExamClassroomId" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Quarter">
             <EntityTypeMapping TypeName="HUInspectorModel.Quarter">
               <MappingFragment StoreEntitySet="Quarter">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="QuarterName" ColumnName="QuarterName" />
                 <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="QuarterName" ColumnName="QuarterName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="HUInspectorModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="HUInspectorModel.User">
               <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="Insertion" ColumnName="Insertion" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="Mail" ColumnName="Mail" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="UserTypeId" ColumnName="UserTypeId" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Mail" ColumnName="Mail" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Insertion" ColumnName="Insertion" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserType">
             <EntityTypeMapping TypeName="HUInspectorModel.UserType">
               <MappingFragment StoreEntitySet="UserType">
-                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Evaluation">
+            <EntityTypeMapping TypeName="HUInspectorModel.Evaluation">
+              <MappingFragment StoreEntitySet="Evaluation">
+                <ScalarProperty Name="Mimetype" ColumnName="Mimetype" />
+                <ScalarProperty Name="Document" ColumnName="Document" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="ExamId" ColumnName="ExamId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

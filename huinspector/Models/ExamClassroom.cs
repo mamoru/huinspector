@@ -14,6 +14,11 @@ namespace huinspector.Models
     
     public partial class ExamClassroom
     {
+        public ExamClassroom()
+        {
+            this.ExamSubscription = new HashSet<ExamSubscription>();
+        }
+    
         public int ExamId { get; set; }
         public int ClassroomId { get; set; }
         public System.DateTime DateTime { get; set; }
@@ -22,5 +27,6 @@ namespace huinspector.Models
     
         public virtual Classroom Classroom { get; set; }
         public virtual Exam Exam { get; set; }
+        public virtual ICollection<ExamSubscription> ExamSubscription { get; set; }
     }
 }

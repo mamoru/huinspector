@@ -23,6 +23,7 @@ namespace huinspector.Models
         public Nullable<bool> IsNA { get; set; }
     
         public virtual Exam Exam { get; set; }
+        public virtual ExamClassroom ExamClassroom { get; set; }
         public virtual User User { get; set; }
     }
 }
