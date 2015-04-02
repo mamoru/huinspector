@@ -26,7 +26,6 @@
     @foreach (var item in Model)
     {
         int currentUserId = Convert.ToInt32(ViewData["CurrentUserID"]);
-        //moet variabel gemaakt worden met inloggen(userID)
         if (@item.UserId == currentUserId && @item.Result != null)
         {
 

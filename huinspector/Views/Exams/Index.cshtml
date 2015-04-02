@@ -15,67 +15,62 @@
 
     @foreach (var item in Model)
     {
+        <tr>
+            <td>
 
-        Int32 UserId = Convert.ToInt32(ViewData["CurrentUserID"]);
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
+            </td>
+            <td>
+                @{
+                Int32 UserId = Convert.ToInt32(ViewData["CurrentUserID"]);
 
-        Int32 UserInDb = item.ExamSubscription.Where(t => t.UserId == UserId).Count();
-        Int32 classroomsScheduled = item.ExamClassroom.Count();
-        
-        
-        if (UserInDb == 0 && classroomsScheduled > 0)
-        {
-            <tr>
-                <td>
-                    
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
-                </td>
-                <td>
+                var examSubscription = item.ExamSubscription.Where(t => t.UserId == UserId);
+                Int32 classroomsScheduled = item.ExamClassroom.Count();
+                }
 
-                    @foreach(var classroom in item.ExamClassroom)
+                @if (examSubscription.Count() == 0 && classroomsScheduled > 0)
+                {
+                    foreach (var classroom in item.ExamClassroom)
                     {
-                        
+
                         @Html.ActionLink("Schrijf je in voor week " + classroom.Week, "SubscribeForExam"
-                        ,new { id = item.Id, classroomid = classroom.Id }
-                        , new { onclick = "return confirm('Weet je zeker dat je je wilt inschrijven voor tentamen "+ item.Name + " op week " + classroom.Week + "?');" })
-                        <br/>
+                            , new { id = item.Id, classroomid = classroom.Id }
+                            , new { onclick = "return confirm('Weet je zeker dat je je wilt inschrijven voor tentamen " + item.Name + " op week " + classroom.Week + "?');" })
+                        <br />
                     }
-                </td>
-            </tr>
-        }
-        else if (UserInDb > 0)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
-                </td>
-                <td>
-                    Ingeschreven
-    
-                </td>
-            </tr>
-        }
-        else if (classroomsScheduled == 0)
-        {
-                        <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quarter.QuarterName)
-                </td>
-                <td>
-                    Nog niet ingeroosterd
-    
-                </td>
-            </tr>
-        }
+                }
+                else if (examSubscription.Count() > 0)
+                {   
+                    if (examSubscription.First().Result != null || examSubscription.First().IsNA != null)
+                    { 
+                        if (item.Evaluation.Where(t => t.UserId == UserId).Count() == 0)
+                        {
+                            @Html.ActionLink("Vul evaluatie in", "SubmitExamEvaluation", "Evaluation", new { id = item.Id }, null);
+                        }
+                        else
+                        { 
+                           @:Evaluatie afgerond
+                        }
+                    }
+                    else
+                    {
+                         @:Ingeschreven
+                    }
+
+                }
+                else if (classroomsScheduled == 0)
+                {
+                    @:Nog niet ingeroosterd
+                }
+            </td>
+        </tr>
+
+
     }
+    
 
 </table>
 
